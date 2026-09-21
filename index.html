@@ -6,6 +6,7 @@
 <title>Chess Tournament Points Table</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header class="masthead">
@@ -14,173 +15,652 @@
       <h1>Chess Tournament Points Table</h1>
       <p>League of 28 games (7 each), then semi-finals and the final.</p>
     </div>
+
     <div class="toolbar" role="toolbar" aria-label="Tournament actions">
-      <button type="button" class="btn ghost" id="btnSettings">Edit players &amp; scoring</button>
-      <button type="button" class="btn ghost" id="btnExport">Download CSV</button>
-      <button type="button" class="btn ghost" id="btnPrint">Print</button>
-      <button type="button" class="btn ghost danger" id="btnReset">Reset results</button>
+      <button type="button" class="btn ghost" id="btnSettings">
+        Edit players &amp; scoring
+      </button>
+
+      <button type="button" class="btn ghost" id="btnExport">
+        Download CSV
+      </button>
+
+      <button type="button" class="btn ghost" id="btnPrint">
+        Print
+      </button>
+
+      <button type="button" class="btn ghost danger" id="btnReset">
+        Reset results
+      </button>
     </div>
   </div>
+
   <nav class="stagenav" aria-label="Jump to section">
     <a href="#players">Players</a>
     <a href="#league">League table</a>
     <a href="#fixtures">Fixtures</a>
     <a href="#playoffs">Semi-finals &amp; Final</a>
   </nav>
+
   <div class="checker" aria-hidden="true"></div>
 </header>
 
+
 <main class="layout">
 
-  <section class="card full roster-card" id="players" aria-labelledby="playersTitle">
+  <!-- PLAYERS -->
+  <section
+    class="card full roster-card"
+    id="players"
+    aria-labelledby="playersTitle"
+  >
     <div class="card-head">
       <h2 id="playersTitle">Players</h2>
-      <span class="hint">Tap a picture to add or change a player's photo. Photos are saved in this browser.</span>
+
+      <span class="hint">
+        Tap a picture to add or change a player's photo.
+        Photos are saved in this browser.
+      </span>
     </div>
+
     <div class="roster" id="roster"></div>
-    <input type="file" id="photoInput" accept="image/*" hidden>
+
+    <input
+      type="file"
+      id="photoInput"
+      accept="image/*"
+      hidden
+    >
   </section>
 
+
+  <!-- MAIN LEAGUE COLUMN -->
   <div class="col-main" id="league">
 
-    <section class="card" aria-labelledby="standingsTitle">
+    <!-- LEAGUE STANDINGS -->
+    <section
+      class="card"
+      aria-labelledby="standingsTitle"
+    >
+
       <div class="card-head">
-        <h2 id="standingsTitle">League standings</h2>
+
+        <h2 id="standingsTitle">
+          League standings
+        </h2>
+
         <div class="progress-wrap">
-          <span id="progressText" class="progress-text"></span>
-          <div class="progress" role="progressbar" aria-labelledby="progressText" aria-valuemin="0" aria-valuemax="28" id="progressBar">
-            <div class="progress-fill" id="progressFill"></div>
+
+          <span
+            id="progressText"
+            class="progress-text"
+          ></span>
+
+          <div
+            class="progress"
+            role="progressbar"
+            aria-labelledby="progressText"
+            aria-valuemin="0"
+            aria-valuemax="28"
+            id="progressBar"
+          >
+            <div
+              class="progress-fill"
+              id="progressFill"
+            ></div>
           </div>
+
         </div>
+
       </div>
-      <div id="banner" class="banner" hidden></div>
+
+
+      <div
+        id="banner"
+        class="banner"
+        hidden
+      ></div>
+
+
       <div class="table-scroll">
-        <table class="standings" id="standings">
+
+        <table
+          class="standings"
+          id="standings"
+        >
+
           <thead>
+
             <tr>
-              <th scope="col" class="c-rank">Rank</th>
-              <th scope="col" class="c-name">Player</th>
-              <th scope="col" class="num">Played</th>
-              <th scope="col" class="num">Won</th>
-              <th scope="col" class="num">Drawn</th>
-              <th scope="col" class="num">Lost</th>
-              <th scope="col" class="num pts">Points</th>
-              <th scope="col" class="num">Tiebreak</th>
+
+              <th
+                scope="col"
+                class="c-rank"
+              >
+                Rank
+              </th>
+
+              <th
+                scope="col"
+                class="c-name"
+              >
+                Player
+              </th>
+
+              <th
+                scope="col"
+                class="num"
+              >
+                Played
+              </th>
+
+              <th
+                scope="col"
+                class="num"
+              >
+                Won
+              </th>
+
+              <th
+                scope="col"
+                class="num"
+              >
+                Drawn
+              </th>
+
+              <th
+                scope="col"
+                class="num"
+              >
+                Lost
+              </th>
+
+              <th
+                scope="col"
+                class="num pts"
+              >
+                Points
+              </th>
+
+              <th
+                scope="col"
+                class="num"
+              >
+                Tiebreak
+              </th>
+
             </tr>
+
           </thead>
+
           <tbody id="standingsBody"></tbody>
+
         </table>
+
       </div>
-      <p class="note" id="scoringNote"></p>
+
+
+      <p
+        class="note"
+        id="scoringNote"
+      ></p>
+
     </section>
 
-    <section class="card" aria-labelledby="boardTitle">
+
+    <!-- RESULTS BOARD -->
+    <section
+      class="card"
+      aria-labelledby="boardTitle"
+    >
+
       <div class="card-head">
-        <h2 id="boardTitle">Results board</h2>
-        <span class="hint">Read across: each row is that player's result against the column player. Click a square to enter or edit a game.</span>
+
+        <h2 id="boardTitle">
+          Results board
+        </h2>
+
+        <span class="hint">
+          Read across: each row is that player's result against
+          the column player. Click a square to enter or edit a game.
+        </span>
+
       </div>
+
+
       <div class="table-scroll">
-        <table class="board" id="board"></table>
+
+        <table
+          class="board"
+          id="board"
+        ></table>
+
       </div>
+
     </section>
 
-    <section class="card no-print" aria-labelledby="historyTitle">
-      <div class="card-head"><h2 id="historyTitle">Recent results</h2></div>
-      <ul class="history" id="history"></ul>
+
+    <!-- RECENT RESULTS -->
+    <section
+      class="card no-print"
+      aria-labelledby="historyTitle"
+    >
+
+      <div class="card-head">
+
+        <h2 id="historyTitle">
+          Recent results
+        </h2>
+
+      </div>
+
+      <ul
+        class="history"
+        id="history"
+      ></ul>
+
     </section>
 
   </div>
 
+
+  <!-- SIDE RESULT FORM -->
   <aside class="col-side no-print">
-    <section class="card sticky" aria-labelledby="formTitle">
-      <div class="card-head"><h2 id="formTitle">Record a league result</h2></div>
 
-      <div class="field">
-        <label for="matchText">Match name</label>
-        <input type="text" id="matchText" autocomplete="off" placeholder="SK vs VIVEK">
+    <section
+      class="card sticky"
+      aria-labelledby="formTitle"
+    >
+
+      <div class="card-head">
+
+        <h2 id="formTitle">
+          Record a league result
+        </h2>
+
       </div>
 
+
       <div class="field">
-        <label for="matchSelect">Or pick a match</label>
+
+        <label for="matchText">
+          Match name
+        </label>
+
+        <input
+          type="text"
+          id="matchText"
+          autocomplete="off"
+          placeholder="SK vs VIVEK"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="matchSelect">
+          Or pick a match
+        </label>
+
         <select id="matchSelect"></select>
+
       </div>
 
-      <p class="status" id="matchStatus" aria-live="polite"></p>
+
+      <p
+        class="status"
+        id="matchStatus"
+        aria-live="polite"
+      ></p>
+
 
       <fieldset class="field winner-field">
-        <legend>Winner</legend>
-        <div class="winner-group" id="winnerGroup"></div>
+
+        <legend>
+          Winner
+        </legend>
+
+        <div
+          class="winner-group"
+          id="winnerGroup"
+        ></div>
+
       </fieldset>
 
-      <button type="button" class="btn primary block" id="btnSave" disabled>Save result</button>
+
+      <button
+        type="button"
+        class="btn primary block"
+        id="btnSave"
+        disabled
+      >
+        Save result
+      </button>
+
     </section>
+
   </aside>
 
-  <section class="card full" id="fixtures" aria-labelledby="fixturesTitle">
+
+  <!-- FIXTURES -->
+  <section
+    class="card full"
+    id="fixtures"
+    aria-labelledby="fixturesTitle"
+  >
+
     <div class="card-head">
+
       <div>
-        <h2 id="fixturesTitle">Fixtures</h2>
-        <span class="hint">7 rounds of 4 games. Every player plays once in each round.</span>
+
+        <h2 id="fixturesTitle">
+          Fixtures
+        </h2>
+
+        <span class="hint">
+          7 rounds of 4 games.
+          Every player plays once in each round.
+        </span>
+
       </div>
+
+
       <div class="filters no-print">
-        <label class="sr-only" for="filterPlayer">Show games for</label>
+
+        <label
+          class="sr-only"
+          for="filterPlayer"
+        >
+          Show games for
+        </label>
+
         <select id="filterPlayer"></select>
-        <label class="sr-only" for="filterStatus">Show status</label>
+
+
+        <label
+          class="sr-only"
+          for="filterStatus"
+        >
+          Show status
+        </label>
+
         <select id="filterStatus">
-          <option value="all">All games</option>
-          <option value="pending">Not played</option>
-          <option value="done">Played</option>
+
+          <option value="all">
+            All games
+          </option>
+
+          <option value="pending">
+            Not played
+          </option>
+
+          <option value="done">
+            Played
+          </option>
+
         </select>
+
       </div>
+
     </div>
-    <div class="rounds" id="rounds"></div>
+
+
+    <div
+      class="rounds"
+      id="rounds"
+    ></div>
+
   </section>
 
-  <section class="card full" id="playoffs" aria-labelledby="playoffsTitle">
+
+  <!-- PLAYOFFS -->
+  <section
+    class="card full"
+    id="playoffs"
+    aria-labelledby="playoffsTitle"
+  >
+
     <div class="card-head">
-      <h2 id="playoffsTitle">Semi-finals &amp; Final</h2>
-      <span class="hint">The top 4 from the league play semi-finals (1st v 4th, 2nd v 3rd). The winners play the final and the losers play for third place.</span>
+
+      <h2 id="playoffsTitle">
+        Semi-finals &amp; Final
+      </h2>
+
+      <span class="hint">
+        The top 4 from the league play semi-finals
+        (1st v 4th, 2nd v 3rd).
+        The winners play the final and the losers play
+        for third place.
+      </span>
+
     </div>
-    <p class="status" id="koStatus" aria-live="polite"></p>
-    <details class="seeding no-print" id="seedDetails">
-      <summary>Adjust seeding (use this to settle ties)</summary>
-      <div class="seed-grid" id="seedGrid"></div>
+
+
+    <p
+      class="status"
+      id="koStatus"
+      aria-live="polite"
+    ></p>
+
+
+    <details
+      class="seeding no-print"
+      id="seedDetails"
+    >
+
+      <summary>
+        Adjust seeding (use this to settle ties)
+      </summary>
+
+
+      <div
+        class="seed-grid"
+        id="seedGrid"
+      ></div>
+
+
       <div class="seed-actions">
-        <button type="button" class="btn small" id="seedReset">Use league order</button>
-        <span class="hint" id="seedNote"></span>
+
+        <button
+          type="button"
+          class="btn small"
+          id="seedReset"
+        >
+          Use league order
+        </button>
+
+        <span
+          class="hint"
+          id="seedNote"
+        ></span>
+
       </div>
+
     </details>
-    <div class="bracket" id="bracket"></div>
-    <p class="note">Playoff games cannot end level. If a game is drawn, play a tiebreak game and mark its winner.</p>
+
+
+    <div
+      class="bracket"
+      id="bracket"
+    ></div>
+
+
+    <p class="note">
+      Playoff games cannot end level.
+      If a game is drawn, play a tiebreak game and mark its winner.
+    </p>
+
   </section>
 
 </main>
 
-<dialog id="settingsDialog" aria-labelledby="settingsTitle">
-  <form method="dialog" id="settingsForm">
-    <h2 id="settingsTitle">Players &amp; scoring</h2>
-    <p class="dialog-note">Renaming a player keeps their results and photo. Add photos from the Players section.</p>
-    <div class="settings-grid" id="settingsPlayers"></div>
+
+<!-- SETTINGS DIALOG -->
+<dialog
+  id="settingsDialog"
+  aria-labelledby="settingsTitle"
+>
+
+  <form
+    method="dialog"
+    id="settingsForm"
+  >
+
+    <h2 id="settingsTitle">
+      Players &amp; scoring
+    </h2>
+
+
+    <p class="dialog-note">
+      Renaming a player keeps their results and photo.
+      Add photos from the Players section.
+    </p>
+
+
+    <div
+      class="settings-grid"
+      id="settingsPlayers"
+    ></div>
+
+
     <div class="settings-scoring">
+
       <div class="field">
-        <label for="winPts">Points for a win</label>
-        <input type="number" id="winPts" min="0" step="0.5">
+
+        <label for="winPts">
+          Points for a win
+        </label>
+
+        <input
+          type="number"
+          id="winPts"
+          min="0"
+          step="0.5"
+        >
+
       </div>
+
+
       <div class="field">
-        <label for="drawPts">Points for a draw</label>
-        <input type="number" id="drawPts" min="0" step="0.5">
+
+        <label for="drawPts">
+          Points for a draw
+        </label>
+
+        <input
+          type="number"
+          id="drawPts"
+          min="0"
+          step="0.5"
+        >
+
       </div>
+
     </div>
-    <p class="form-error" id="settingsError" role="alert"></p>
+
+
+    <p
+      class="form-error"
+      id="settingsError"
+      role="alert"
+    ></p>
+
+
     <div class="dialog-actions">
-      <button type="button" class="btn" id="settingsCancel">Cancel</button>
-      <button type="submit" class="btn primary" id="settingsSave">Save changes</button>
+
+      <button
+        type="button"
+        class="btn"
+        id="settingsCancel"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        class="btn primary"
+        id="settingsSave"
+      >
+        Save changes
+      </button>
+
     </div>
+
   </form>
+
 </dialog>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- TOAST -->
+<div
+  class="toast"
+  id="toast"
+  role="status"
+  aria-live="polite"
+></div>
+
+
+<!-- ========================================================= -->
+<!-- FIREBASE -->
+<!-- ========================================================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+<script>
+
+  /* =========================================================
+     FIREBASE CONFIGURATION
+     ========================================================= */
+
+  const firebaseConfig = {
+
+    apiKey:
+      "AIzaSyCmFFriGWoPU9byCxfEN8t3qum9-tSftOg",
+
+    authDomain:
+      "chess-tournament-2026.firebaseapp.com",
+
+    projectId:
+      "chess-tournament-2026",
+
+    storageBucket:
+      "chess-tournament-2026.firebasestorage.app",
+
+    messagingSenderId:
+      "795088114852",
+
+    appId:
+      "1:795088114852:web:fee0f45199cd6c514bc231",
+
+    measurementId:
+      "G-RWNRL552DM"
+
+  };
+
+
+  /* Initialize Firebase */
+
+  firebase.initializeApp(firebaseConfig);
+
+
+  /* Initialize Firestore */
+
+  const db = firebase.firestore();
+
+</script>
+
+
+<!-- ========================================================= -->
+<!-- YOUR EXISTING APPLICATION -->
+<!-- IMPORTANT: app.js MUST COME AFTER FIREBASE -->
+<!-- ========================================================= -->
 
 <script src="app.js"></script>
+
+
 </body>
 </html>

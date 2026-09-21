@@ -36,15 +36,141 @@
     });
   });
 
-  /* ---------- State ---------- */
+    /* ---------- State ---------- */
   // results: { "0-3": { w: 3 | "d", at: ms } }   key = lower index - higher index
   // ko: { sf1|sf2|final|third: { a, b, w, at } }
+
   var state = load();
+
   var form = { p1: null, p2: null, winner: null };
   var view = { player: 'all', status: 'all' };
   var photoTarget = null;
   var storageWarned = false;
 
+  /* ---------- Firebase cloud sync ---------- */
+
+  var CLOUD_COLLECTION = 'tournament';
+  var CLOUD_DOCUMENT = 'main';
+
+  // Becomes true only after the first Firebase snapshot has been received.
+  var cloudInitialized = false;
+
+  // Prevents Firebase updates from accidentally being written back
+  // while we are applying data received from the cloud.
+  var applyingCloudState = false;
+
+  var cloudUnsubscribe = null;
+
+  function cloudPayload() {
+    return {
+      players: state.players,
+      win: state.win,
+      draw: state.draw,
+      results: state.results,
+      seeds: state.seeds,
+      ko: state.ko,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+  }
+
+  function saveLocal() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      return true;
+    } catch (e) {
+      if (!storageWarned) {
+        storageWarned = true;
+        toast('Could not save in this browser. Firebase will still be used when available.');
+      }
+      return false;
+    }
+  }
+
+  function saveCloud() {
+    if (!cloudInitialized || applyingCloudState) return;
+
+    db.collection(CLOUD_COLLECTION)
+      .doc(CLOUD_DOCUMENT)
+      .set(cloudPayload())
+      .catch(function (err) {
+        console.error('Firebase save failed:', err);
+        toast('Cloud save failed. Check your Firebase connection.');
+      });
+  }
+
+  function startCloudSync() {
+    if (cloudUnsubscribe) return;
+
+    cloudUnsubscribe = db
+      .collection(CLOUD_COLLECTION)
+      .doc(CLOUD_DOCUMENT)
+      .onSnapshot(
+        function (doc) {
+
+          applyingCloudState = true;
+
+          if (doc.exists) {
+            var data = doc.data();
+
+            if (Array.isArray(data.players) && data.players.length === N) {
+              state.players = data.players;
+            }
+
+            if (typeof data.win === 'number') {
+              state.win = data.win;
+            }
+
+            if (typeof data.draw === 'number') {
+              state.draw = data.draw;
+            }
+
+            if (data.results && typeof data.results === 'object') {
+              state.results = data.results;
+            }
+
+            state.seeds = validSeeds(data.seeds) ? data.seeds : null;
+
+            if (data.ko && typeof data.ko === 'object') {
+              state.ko = data.ko;
+            } else {
+              state.ko = {};
+            }
+
+            // Photos deliberately remain local.
+            // They are stored in localStorage because they are image data.
+            saveLocal();
+
+            cloudInitialized = true;
+
+            renderAll();
+
+            applyingCloudState = false;
+
+          } else {
+
+            // First device opening the app:
+            // create the shared Firebase document using its current state.
+            cloudInitialized = true;
+
+            saveCloud();
+
+            saveLocal();
+
+            renderAll();
+
+            applyingCloudState = false;
+          }
+        },
+        function (err) {
+          console.error('Firebase sync failed:', err);
+
+          cloudInitialized = false;
+          applyingCloudState = false;
+
+          toast('Firebase connection failed. Local browser storage is still active.');
+        }
+      );
+  }
   function defaultState() {
     return { players: DEFAULT_PLAYERS.slice(), win: 1, draw: 0.5, results: {}, photos: {}, seeds: null, ko: {} };
   }
@@ -75,16 +201,12 @@
   }
 
   function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      return true;
-    } catch (e) {
-      if (!storageWarned) {
-        storageWarned = true;
-        toast('Could not save in this browser (storage full or blocked). Your changes will be lost when you close the page.');
-      }
-      return false;
-    }
+    var localOK = saveLocal();
+
+    // Save to Firebase after the initial cloud state has loaded.
+    saveCloud();
+
+    return localOK;
   }
 
   /* ---------- Helpers ---------- */
@@ -863,8 +985,15 @@
   function renderAll() {
     var rows = compute();
     var seeds = getSeeds(rows);
+
     var cleared = syncKnockout(seeds);
-    if (cleared) save();
+
+    // Do not write anything to Firebase while applying
+    // the initial/remote cloud state.
+    if (cleared && !applyingCloudState) {
+      save();
+    }
+
     renderRoster();
     renderStandings(rows);
     renderBoard(rows);
@@ -873,6 +1002,7 @@
     renderFixtures();
     renderHistory();
     renderPlayoffs(rows, seeds);
+
     return cleared;
   }
 
@@ -910,5 +1040,11 @@
     if (file && photoTarget !== null) processPhoto(file, photoTarget);
   });
 
+    // Render the locally stored state immediately.
   renderAll();
+
+  // Then connect to Firebase and replace it with the shared
+  // tournament state when the cloud document is received.
+  startCloudSync();
+
 })();
